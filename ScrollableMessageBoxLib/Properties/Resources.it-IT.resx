@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -118,13 +118,13 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="ButtonAbortText" xml:space="preserve">
-    <value>_Abort</value>
+    <value>_Termina</value>
   </data>
   <data name="ButtonCancelText" xml:space="preserve">
-    <value>_Cancel</value>
+    <value>_Annulla</value>
   </data>
   <data name="ButtonIgnoreText" xml:space="preserve">
-    <value>_Ignore</value>
+    <value>_Ignora</value>
   </data>
   <data name="ButtonNoText" xml:space="preserve">
     <value>_No</value>
@@ -133,9 +133,9 @@
     <value>_OK</value>
   </data>
   <data name="ButtonRetryText" xml:space="preserve">
-    <value>_Retry</value>
+    <value>_Riprova</value>
   </data>
   <data name="ButtonYesText" xml:space="preserve">
-    <value>_Yes</value>
+    <value>_Sì</value>
   </data>
 </root>

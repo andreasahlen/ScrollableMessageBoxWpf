@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 namespace ScrollableMessageBoxLib.Properties {
+    using System;
     
     
     /// <summary>
@@ -18,7 +19,7 @@ namespace ScrollableMessageBoxLib.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -37,7 +38,7 @@ namespace ScrollableMessageBoxLib.Properties {
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
-                if ((resourceMan == null)) {
+                if (object.ReferenceEquals(resourceMan, null)) {
                     global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("ScrollableMessageBoxLib.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
@@ -56,6 +57,69 @@ namespace ScrollableMessageBoxLib.Properties {
             }
             set {
                 resourceCulture = value;
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Abort.
+        /// </summary>
+        internal static string ButtonAbortText {
+            get {
+                return ResourceManager.GetString("ButtonAbortText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Cancel.
+        /// </summary>
+        internal static string ButtonCancelText {
+            get {
+                return ResourceManager.GetString("ButtonCancelText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Ignore.
+        /// </summary>
+        internal static string ButtonIgnoreText {
+            get {
+                return ResourceManager.GetString("ButtonIgnoreText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _No.
+        /// </summary>
+        internal static string ButtonNoText {
+            get {
+                return ResourceManager.GetString("ButtonNoText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _OK.
+        /// </summary>
+        internal static string ButtonOKText {
+            get {
+                return ResourceManager.GetString("ButtonOKText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Retry.
+        /// </summary>
+        internal static string ButtonRetryText {
+            get {
+                return ResourceManager.GetString("ButtonRetryText", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to _Yes.
+        /// </summary>
+        internal static string ButtonYesText {
+            get {
+                return ResourceManager.GetString("ButtonYesText", resourceCulture);
             }
         }
     }

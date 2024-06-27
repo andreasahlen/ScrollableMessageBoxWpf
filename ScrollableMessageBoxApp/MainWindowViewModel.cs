@@ -330,18 +330,7 @@ Updated: $Date: 2023/11/30 09:46:01 $
                 int idx = r.Next(0, images.Count - 1);
                 if (idx < images.Count - 1)
                 {
-                    ScrollableMessageBoxViewModel msgBox = new ScrollableMessageBoxViewModel(Application.Current.MainWindow, longtext ? this.LongText : this.Text2, "title", btn, (MessageBoxImageEx)images[idx],
-                        new Dictionary<MessageBoxButtonTypeEx, string>
-                        {
-                            { MessageBoxButtonTypeEx.Abort, "_Beenden" },
-                            { MessageBoxButtonTypeEx.Cancel, "_Abbrechen" },
-                            { MessageBoxButtonTypeEx.Ignore, "_Ignorieren" },
-                            { MessageBoxButtonTypeEx.No, "_Nein" },
-                            { MessageBoxButtonTypeEx.OK, "_OK" },
-                            { MessageBoxButtonTypeEx.Retry, "_Wiederholen" },
-                            { MessageBoxButtonTypeEx.Yes, "_Ja" }
-                        }
-                    );
+                    ScrollableMessageBoxViewModel msgBox = new ScrollableMessageBoxViewModel(Application.Current.MainWindow, longtext ? this.LongText : this.Text2, "title", btn, (MessageBoxImageEx)images[idx], new System.Globalization.CultureInfo("fr-FR"));
                     MessageBox.Show(msgBox.ShowDialog().ToString());
                     msgBox.Dispose();
                 }
