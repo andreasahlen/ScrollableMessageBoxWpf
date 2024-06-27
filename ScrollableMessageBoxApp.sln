@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.33801.447
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrollableMessageBoxApp", "ScrollableMessageBoxApp\ScrollableMessageBoxApp.csproj", "{55DBAD3C-D524-4B46-8D9C-C198CAE85929}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScrollableMessageBoxLib", "ScrollableMessageBoxLib\ScrollableMessageBoxLib.csproj", "{BA64EA0A-6057-424D-B82D-C429E43D87E5}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{55DBAD3C-D524-4B46-8D9C-C198CAE85929}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{55DBAD3C-D524-4B46-8D9C-C198CAE85929}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{55DBAD3C-D524-4B46-8D9C-C198CAE85929}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{55DBAD3C-D524-4B46-8D9C-C198CAE85929}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA64EA0A-6057-424D-B82D-C429E43D87E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA64EA0A-6057-424D-B82D-C429E43D87E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA64EA0A-6057-424D-B82D-C429E43D87E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA64EA0A-6057-424D-B82D-C429E43D87E5}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E5631151-E5C9-4EAC-B3E7-8AE52F9D5F2E}
+	EndGlobalSection
+EndGlobal
