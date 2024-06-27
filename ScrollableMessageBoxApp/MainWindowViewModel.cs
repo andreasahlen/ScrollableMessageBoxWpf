@@ -330,9 +330,10 @@ Updated: $Date: 2023/11/30 09:46:01 $
                 int idx = r.Next(0, images.Count - 1);
                 if (idx < images.Count - 1)
                 {
-                    ScrollableMessageBoxViewModel msgBox = new ScrollableMessageBoxViewModel(Application.Current.MainWindow, longtext ? this.LongText : this.Text2, "title", btn, (MessageBoxImageEx)images[idx], new System.Globalization.CultureInfo("en-US"));
-                    MessageBox.Show(msgBox.ShowDialog().ToString());
-                    msgBox.Dispose();
+                    ScrollableMessageBoxViewModel msgBoxDefault = new ScrollableMessageBoxViewModel(Application.Current.MainWindow, longtext ? this.LongText : this.Text2, "title", btn, (MessageBoxImageEx)images[idx]);
+                    MessageBox.Show(msgBoxDefault.ShowDialog().ToString());
+                    msgBoxDefault.Dispose();
+
                 }
                 longtext = !longtext;
             }

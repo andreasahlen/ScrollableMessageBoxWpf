@@ -33,8 +33,19 @@ namespace ScrollableMessageBoxLib.Views
 
         private void InitializeDialog()
         {
+            this.SetWindow();
             this.TextBoxMessageText.IsReadOnly = true;
             this.EventHandlers(true);
+        }
+
+        private void SetWindow()
+        {
+            this.MinWidth = 400;
+            this.MinHeight = 100;
+            this.MaxHeight = 600;
+            this.MaxWidth = 600;
+            this.ResizeMode = ResizeMode.NoResize;
+            this.SizeToContent = SizeToContent.WidthAndHeight;
         }
 
         public void SetButtonVisibility(MessageBoxButtonEx buttons)
@@ -47,8 +58,9 @@ namespace ScrollableMessageBoxLib.Views
                     break;
 
                 case MessageBoxButtonEx.OKCancel:
-                    this.OkButton.Visibility = Visibility.Visible;
+                    this.OkButton.Visibility = Visibility.Visible;                    
                     this.CancelButton.Visibility = Visibility.Visible;
+
                     break;
 
                 case MessageBoxButtonEx.YesNoCancel:
@@ -77,27 +89,86 @@ namespace ScrollableMessageBoxLib.Views
         {
             if (attach)
             {
-                this.OkButton.Click += ButtonClickedHandler;
-                this.CancelButton.Click += ButtonClickedHandler;
-                this.YesButton.Click += ButtonClickedHandler;
-                this.NoButton.Click += ButtonClickedHandler;
-                this.AbortButton.Click += ButtonClickedHandler;
-                this.RetryButton.Click += ButtonClickedHandler;
-                this.IgnoreButton.Click += ButtonClickedHandler;
+                this.ButtonEvents(this.OkButton, true);
+                this.ButtonEvents(this.CancelButton, true);
+                this.ButtonEvents(this.YesButton, true);
+                this.ButtonEvents(this.NoButton, true);
+                this.ButtonEvents(this.AbortButton, true);
+                this.ButtonEvents(this.RetryButton, true);
+                this.ButtonEvents(this.IgnoreButton, true);
+
                 this.Closing += ScrollableMessageBoxView_Closing;
                 this.KeyUp += ScrollableMessageBoxView_KeyUp;
             }
             else
             {
-                this.OkButton.Click -= ButtonClickedHandler;
-                this.CancelButton.Click -= ButtonClickedHandler;
-                this.YesButton.Click -= ButtonClickedHandler;
-                this.NoButton.Click -= ButtonClickedHandler;
-                this.AbortButton.Click -= ButtonClickedHandler;
-                this.RetryButton.Click -= ButtonClickedHandler;
-                this.IgnoreButton.Click -= ButtonClickedHandler;
+                this.ButtonEvents(this.OkButton, false);
+                this.ButtonEvents(this.CancelButton, false);
+                this.ButtonEvents(this.YesButton, false);
+                this.ButtonEvents(this.NoButton, false);
+                this.ButtonEvents(this.AbortButton, false);
+                this.ButtonEvents(this.RetryButton, false);
+                this.ButtonEvents(this.IgnoreButton, false);
+
                 this.Closing -= ScrollableMessageBoxView_Closing;
                 this.KeyUp -= ScrollableMessageBoxView_KeyUp;
+            }
+        }
+
+        private void ButtonEvents(Button button, bool attach)
+        {
+            if (attach)
+            {
+                button.Click += ButtonClickedHandler;
+                button.GotFocus += OkButton_GotFocus;
+                button.LostFocus += OkButton_LostFocus;
+                button.MouseEnter += Button_MouseEnter;
+                button.MouseLeave += Button_MouseLeave;
+            }
+            else
+            {
+                button.Click -= ButtonClickedHandler;
+                button.GotFocus -= OkButton_GotFocus;
+                button.LostFocus -= OkButton_LostFocus;
+                button.MouseEnter -= Button_MouseEnter;
+                button.MouseLeave -= Button_MouseLeave;
+            }
+        }
+
+        private void Button_MouseLeave(object sender, MouseEventArgs e)
+        {
+            if (sender is Button)
+            {
+                this.SetBold(sender as Button, false);
+            }
+        }
+
+        private void Button_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (sender is Button)
+            {
+                this.SetBold(sender as Button, true);
+            }
+        }
+
+        private void SetBold(Button button, bool bold)
+        {
+            button.FontWeight = !bold ? FontWeights.Normal : FontWeights.Bold;
+        }
+
+        private void OkButton_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button)
+            {
+                this.SetBold(sender as Button, false);
+            }
+        }
+
+        private void OkButton_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button)
+            {
+                this.SetBold(sender as Button, true);
             }
         }
 

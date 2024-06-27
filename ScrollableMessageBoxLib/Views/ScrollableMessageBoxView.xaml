@@ -3,12 +3,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        MinWidth="400"
-        MinHeight="100"
-        MaxHeight="600"
-        MaxWidth="600"
-        ResizeMode="NoResize"
-        SizeToContent="WidthAndHeight"
+        
         mc:Ignorable="d"                
         Title="{Binding Title, Mode=OneTime}" Height="450" Width="800">
     <Window.Resources>
@@ -68,7 +63,7 @@
                     IsDefault="True" />
                 <Button
                     Grid.Column="1"
-                    Grid.Row="0"
+                    Grid.Row="0"                    
                     x:Name="CancelButton"
                     Visibility="Collapsed"
                     Content="_Cancel"
