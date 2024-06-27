@@ -182,6 +182,7 @@ namespace ScrollableMessageBoxLib.Viewmodels
 
         public void Dispose()
         {
+            this?._View?.Close();
             this?._View?.Dispose();
         }
     }
