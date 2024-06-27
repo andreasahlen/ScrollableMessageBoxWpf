@@ -101,7 +101,7 @@ namespace ScrollableMessageBoxLib.Viewmodels
 
         private void SetButtonLocales()
         {
-            this._Locales = this.OverrideCultureInfo(Settings.Default.FallbackIetfLanguageTag);
+            this.OverrideCultureInfo();
 
             this._View.OkButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonOKText;
 
@@ -118,17 +118,28 @@ namespace ScrollableMessageBoxLib.Viewmodels
             this._View.IgnoreButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonIgnoreText;
         }
 
-        private CultureInfo OverrideCultureInfo(string value)
+        private void OverrideCultureInfo()
         {
             List<string> avail = new CultureInfoEnumerator()?.GetAvailableLanguages();
             if (avail.Any(v => v == this._Locales.IetfLanguageTag))
             {
-                return new CultureInfo(avail.FirstOrDefault(v => v == this._Locales.IetfLanguageTag));
+                this._Locales = new CultureInfo(avail.FirstOrDefault(v => v == this._Locales.IetfLanguageTag));
             }
             else
             {
-                return new CultureInfo(value);
+                // except "en-US" (default resources.resx culture)
+                if (this._Locales.IetfLanguageTag == "en-US")
+                {
+                    this._Locales = new CultureInfo("en-US"); // pass this
+                }
+                else
+                {
+                    this._Locales = new CultureInfo(Settings.Default.FallbackIetfLanguageTag);
+                }
+                
             }
+
+            CultureInfo.CurrentUICulture = this._Locales;
         }
 
         private Icon IconFromSystemIcons()
