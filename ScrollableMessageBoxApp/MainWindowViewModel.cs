@@ -310,6 +310,16 @@ Updated: $Date: 2023/11/30 09:46:01 $
 
         private void ClickedEventHandler()
         {
+            this.RunDemo();
+        }
+
+        public bool CanClick
+        {
+            get => true;
+        }
+
+        private void RunDemo()
+        {
             List<MessageBoxButtonEx> buttons = Enum.GetValues(typeof(MessageBoxButtonEx)).Cast<MessageBoxButtonEx>().ToList();
             List<MessageBoxImageEx> images = Enum.GetValues(typeof(MessageBoxImageEx)).Cast<MessageBoxImageEx>().ToList();
 
@@ -320,17 +330,23 @@ Updated: $Date: 2023/11/30 09:46:01 $
                 int idx = r.Next(0, images.Count - 1);
                 if (idx < images.Count - 1)
                 {
-                    ScrollableMessageBoxViewModel msgBox = new ScrollableMessageBoxViewModel(Application.Current.MainWindow, longtext ? this.LongText : this.Text2, "title", btn, (MessageBoxImageEx)images[idx]);
+                    ScrollableMessageBoxViewModel msgBox = new ScrollableMessageBoxViewModel(Application.Current.MainWindow, longtext ? this.LongText : this.Text2, "title", btn, (MessageBoxImageEx)images[idx],
+                        new Dictionary<MessageBoxButtonTypeEx, string>
+                        {
+                            { MessageBoxButtonTypeEx.Abort, "_Beenden" },
+                            { MessageBoxButtonTypeEx.Cancel, "_Abbrechen" },
+                            { MessageBoxButtonTypeEx.Ignore, "_Ignorieren" },
+                            { MessageBoxButtonTypeEx.No, "_Nein" },
+                            { MessageBoxButtonTypeEx.OK, "_OK" },
+                            { MessageBoxButtonTypeEx.Retry, "_Wiederholen" },
+                            { MessageBoxButtonTypeEx.Yes, "_Ja" }
+                        }
+                    );
                     MessageBox.Show(msgBox.ShowDialog().ToString());
                     msgBox.Dispose();
                 }
                 longtext = !longtext;
             }
-        }
-
-        public bool CanClick
-        {
-            get => true;
         }
 
 

@@ -52,6 +52,7 @@
     <Compile Include="Converter\IconToImageSourceConverter .cs" />
     <Compile Include="Core\CommandHandler.cs" />
     <Compile Include="Enums\MessageBoxButtonEx.cs" />
+    <Compile Include="Enums\MessageBoxButtonTypeEx.cs" />
     <Compile Include="Enums\MessageBoxImageEx.cs" />
     <Compile Include="Enums\MessageBoxResultEx.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">

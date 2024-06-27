@@ -126,11 +126,6 @@ namespace ScrollableMessageBoxLib.Views
                 this.CancelEvent();
                 this.Hide();
             }
-            else
-            {
-                this._DialogResult = MessageBoxResultEx.Cancel;
-                this.Hide();
-            }
         }
 
         private void ScrollableMessageBoxView_Closing(object sender, System.ComponentModel.CancelEventArgs e)

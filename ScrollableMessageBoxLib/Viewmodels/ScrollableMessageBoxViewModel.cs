@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -47,13 +48,28 @@ namespace ScrollableMessageBoxLib.Viewmodels
             }
         }
 
-        public ScrollableMessageBoxViewModel(Window owner, string content, string title, MessageBoxButtonEx button, MessageBoxImageEx icon)
+        private Dictionary<MessageBoxButtonTypeEx, string> _DefaultLocales = new Dictionary<MessageBoxButtonTypeEx, string>
+        {
+            { MessageBoxButtonTypeEx.Abort, "_Abort" },
+            { MessageBoxButtonTypeEx.Cancel, "_Cancel" },
+            { MessageBoxButtonTypeEx.Ignore, "_Ignore" },
+            { MessageBoxButtonTypeEx.No, "_No" },
+            { MessageBoxButtonTypeEx.OK, "_OK" },
+            { MessageBoxButtonTypeEx.Retry, "_Retry" },
+            { MessageBoxButtonTypeEx.Yes, "_Yes" }
+        };
+            
+        public ScrollableMessageBoxViewModel(Window owner, string content, string title, MessageBoxButtonEx button, MessageBoxImageEx icon, Dictionary<MessageBoxButtonTypeEx, string> locales = null)
         {
             this.Title = title;
             this.MessageText = content;
             this._Owner = owner;
             this._Button = button;
             this._Icon = icon;
+            if (locales != null)
+            {
+                this._DefaultLocales = locales;
+            }
         }
 
         public ScrollableMessageBoxViewModel(string content, string title, MessageBoxButtonEx button, MessageBoxImageEx icon)
@@ -67,6 +83,15 @@ namespace ScrollableMessageBoxLib.Viewmodels
 
         public MessageBoxResultEx ShowDialog()
         {
+            CultureInfo uiCulture = CultureInfo.CurrentUICulture;
+            this.InitDialog();
+            this.SetButtonLocales();
+            this._View.ShowDialog();
+            return this._View.DialogResult;
+        }
+
+        private void InitDialog()
+        {
             this._View = new ScrollableMessageBoxView();
             this._View.Owner = this._Owner;
             this._View.DataContext = this;
@@ -75,8 +100,17 @@ namespace ScrollableMessageBoxLib.Viewmodels
             this._View.WindowStyle = WindowStyle.ToolWindow;
             this.MessageIcon = this.ToImageSource(IconFromSystemIcons());
             this._View.SetButtonVisibility(this._Button);
-            this._View.ShowDialog();
-            return this._View.DialogResult;
+        }
+
+        private void SetButtonLocales()
+        {
+            this._View.OkButton.Content = this._DefaultLocales.FirstOrDefault(v => v.Key == MessageBoxButtonTypeEx.OK).Value;
+            this._View.CancelButton.Content = this._DefaultLocales.FirstOrDefault(v => v.Key == MessageBoxButtonTypeEx.Cancel).Value;
+            this._View.YesButton.Content = this._DefaultLocales.FirstOrDefault(v => v.Key == MessageBoxButtonTypeEx.Yes).Value;
+            this._View.NoButton.Content = this._DefaultLocales.FirstOrDefault(v => v.Key == MessageBoxButtonTypeEx.No).Value;
+            this._View.RetryButton.Content = this._DefaultLocales.FirstOrDefault(v => v.Key == MessageBoxButtonTypeEx.Retry).Value;
+            this._View.AbortButton.Content = this._DefaultLocales.FirstOrDefault(v => v.Key == MessageBoxButtonTypeEx.Abort).Value;
+            this._View.IgnoreButton.Content = this._DefaultLocales.FirstOrDefault(v => v.Key == MessageBoxButtonTypeEx.Ignore).Value;
         }
 
         private Icon IconFromSystemIcons()
