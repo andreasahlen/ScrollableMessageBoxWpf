@@ -92,11 +92,9 @@ namespace ScrollableMessageBoxLib.Viewmodels
             this._View = new ScrollableMessageBoxView();
             this._View.Owner = this._Owner;
             this._View.DataContext = this;
-            this._View.ShowInTaskbar = false;
-            this._View.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            this._View.WindowStyle = WindowStyle.ToolWindow;
-            this.MessageIcon = this.ToImageSource(IconFromSystemIcons());
             this._View.SetButtonVisibility(this._Button);
+            this.MessageIcon = this.ToImageSource(this.IconFromSystemIcons());
+            
         }
 
         private void SetButtonLocales()

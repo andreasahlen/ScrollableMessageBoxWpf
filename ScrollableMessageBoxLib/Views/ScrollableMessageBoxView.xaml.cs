@@ -53,6 +53,11 @@ namespace ScrollableMessageBoxLib.Views
             this.MaxWidth = 600;
             this.ResizeMode = ResizeMode.NoResize;
             this.SizeToContent = SizeToContent.WidthAndHeight;
+
+            this.ShowInTaskbar = false;
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            this.WindowStyle = WindowStyle.ToolWindow;
+            
         }
 
         public void SetButtonVisibility(MessageBoxButtonEx buttons)

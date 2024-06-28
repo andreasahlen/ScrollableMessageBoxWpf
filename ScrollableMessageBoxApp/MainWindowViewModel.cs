@@ -332,7 +332,6 @@ Updated: $Date: 2023/11/30 09:46:01 $
                 if (idx < images.Count - 1)
                 {
                     ScrollableMessageBoxViewModel msgBoxDefault = new ScrollableMessageBoxViewModel(Application.Current.MainWindow, longtext ? this.LongText : this.Text2, "title", btn, (MessageBoxImageEx)images[idx]);
-                    //MessageBox.Show(msgBoxDefault.ShowDialog().ToString());
                     MessageBoxResultEx res = msgBoxDefault.ShowDialog();
                     Debug.WriteLine(res.ToString());
                     msgBoxDefault.Dispose();
