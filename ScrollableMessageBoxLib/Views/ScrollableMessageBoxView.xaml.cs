@@ -156,7 +156,6 @@ namespace ScrollableMessageBoxLib.Views
             {
                 this.SetBold(sender as Button, false);
             }
-            e.Handled = true;
         }
 
         private void Button_MouseEnter(object sender, MouseEventArgs e)
@@ -165,7 +164,6 @@ namespace ScrollableMessageBoxLib.Views
             {
                 this.SetBold(sender as Button, true);
             }
-            e.Handled = true;
         }
 
         private void SetBold(Button button, bool bold)
@@ -179,7 +177,6 @@ namespace ScrollableMessageBoxLib.Views
             {
                 this.SetBold(sender as Button, false);
             }
-            e.Handled = true;
         }
 
         private void OkButton_GotFocus(object sender, RoutedEventArgs e)
@@ -188,7 +185,6 @@ namespace ScrollableMessageBoxLib.Views
             {
                 this.SetBold(sender as Button, true);
             }
-            e.Handled = true;
         }
 
         private void ScrollableMessageBoxView_KeyDown(object sender, KeyEventArgs e)
@@ -221,8 +217,6 @@ namespace ScrollableMessageBoxLib.Views
 
                 this.ProcessHotKey(e.Key.ToString());
             }
-
-            e.Handled = true;
         }
 
         private char GetChar(string value)
@@ -366,7 +360,6 @@ namespace ScrollableMessageBoxLib.Views
                 }
                 this.Deactivate();
             }
-            e.Handled = true;
         }
     }
 }
