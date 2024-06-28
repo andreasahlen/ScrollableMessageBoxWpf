@@ -104,17 +104,11 @@ namespace ScrollableMessageBoxLib.Viewmodels
             this.OverrideCultureInfo();
 
             this._View.OkButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonOKText;
-
             this._View.CancelButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonCancelText;
-
             this._View.YesButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonYesText;
-
             this._View.NoButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonNoText;
-
             this._View.RetryButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonRetryText;
-
             this._View.AbortButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonAbortText;
-
             this._View.IgnoreButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonIgnoreText;
         }
 
@@ -182,7 +176,6 @@ namespace ScrollableMessageBoxLib.Viewmodels
 
         public void Dispose()
         {
-            this?._View?.Close();
             this?._View?.Dispose();
         }
     }

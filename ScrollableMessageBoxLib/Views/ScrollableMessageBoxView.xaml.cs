@@ -1,5 +1,9 @@
 ﻿using ScrollableMessageBoxLib.Enums;
+using ScrollableMessageBoxLib.Utils;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -14,6 +18,8 @@ namespace ScrollableMessageBoxLib.Views
         private MessageBoxResultEx _DialogResult = MessageBoxResultEx.None;
 
         private MessageBoxButtonEx _Buttons = MessageBoxButtonEx.OK;
+
+        private Dictionary<string, char> _HotKeyMapping = new Dictionary<string, char>();
 
         public ScrollableMessageBoxView()
         {
@@ -35,7 +41,6 @@ namespace ScrollableMessageBoxLib.Views
         {
             this.SetWindow();
             this.TextBoxMessageText.IsReadOnly = true;
-            this.EventHandlers(true);
         }
 
         private void SetWindow()
@@ -58,7 +63,7 @@ namespace ScrollableMessageBoxLib.Views
                     break;
 
                 case MessageBoxButtonEx.OKCancel:
-                    this.OkButton.Visibility = Visibility.Visible;                    
+                    this.OkButton.Visibility = Visibility.Visible;
                     this.CancelButton.Visibility = Visibility.Visible;
 
                     break;
@@ -98,7 +103,8 @@ namespace ScrollableMessageBoxLib.Views
                 this.ButtonEvents(this.IgnoreButton, true);
 
                 this.Closing += ScrollableMessageBoxView_Closing;
-                this.KeyUp += ScrollableMessageBoxView_KeyUp;
+                //this.KeyUp += ScrollableMessageBoxView_KeyUp;
+                this.KeyDown += ScrollableMessageBoxView_KeyDown;
             }
             else
             {
@@ -111,7 +117,8 @@ namespace ScrollableMessageBoxLib.Views
                 this.ButtonEvents(this.IgnoreButton, false);
 
                 this.Closing -= ScrollableMessageBoxView_Closing;
-                this.KeyUp -= ScrollableMessageBoxView_KeyUp;
+                //this.KeyUp -= ScrollableMessageBoxView_KeyUp;
+                this.KeyDown += ScrollableMessageBoxView_KeyDown;
             }
         }
 
@@ -119,6 +126,7 @@ namespace ScrollableMessageBoxLib.Views
         {
             if (attach)
             {
+                this.SetButtonHotKyes(button);
                 button.Click += ButtonClickedHandler;
                 button.GotFocus += OkButton_GotFocus;
                 button.LostFocus += OkButton_LostFocus;
@@ -133,6 +141,13 @@ namespace ScrollableMessageBoxLib.Views
                 button.MouseEnter -= Button_MouseEnter;
                 button.MouseLeave -= Button_MouseLeave;
             }
+            
+        }
+
+        private void SetButtonHotKyes(Button button)
+        {
+            char hotKey = HotKeyHelper.GetHotKeyFromString(button.Content.ToString());
+            this._HotKeyMapping.Add(button.Name, hotKey);
         }
 
         private void Button_MouseLeave(object sender, MouseEventArgs e)
@@ -141,6 +156,7 @@ namespace ScrollableMessageBoxLib.Views
             {
                 this.SetBold(sender as Button, false);
             }
+            e.Handled = true;
         }
 
         private void Button_MouseEnter(object sender, MouseEventArgs e)
@@ -149,6 +165,7 @@ namespace ScrollableMessageBoxLib.Views
             {
                 this.SetBold(sender as Button, true);
             }
+            e.Handled = true;
         }
 
         private void SetBold(Button button, bool bold)
@@ -162,6 +179,7 @@ namespace ScrollableMessageBoxLib.Views
             {
                 this.SetBold(sender as Button, false);
             }
+            e.Handled = true;
         }
 
         private void OkButton_GotFocus(object sender, RoutedEventArgs e)
@@ -170,9 +188,10 @@ namespace ScrollableMessageBoxLib.Views
             {
                 this.SetBold(sender as Button, true);
             }
+            e.Handled = true;
         }
 
-        private void ScrollableMessageBoxView_KeyUp(object sender, KeyEventArgs e)
+        private void ScrollableMessageBoxView_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.Enter || e.Key == Key.Return)
             {
@@ -190,13 +209,100 @@ namespace ScrollableMessageBoxLib.Views
                 {
                     this._DialogResult = MessageBoxResultEx.Retry;
                 }
-                this.Hide();
+                this.Deactivate();
             }
             else if (e.Key == Key.Escape)
             {
                 this.CancelEvent();
-                this.Hide();
+                this.Deactivate();
             }
+            else
+            {
+
+                this.ProcessHotKey(e.Key.ToString());
+
+                //if (Keyboard.Modifiers == ModifierKeys.Alt && e.Key == Key.O)
+                //{
+                //    this.ProcessHotKey(e.Key.ToString());
+                //}
+                //else
+                //{
+                //    if (((Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt) && this._HotKeyMapping.Any(v => v.Value == this.GetChar(e.Key.ToString())))
+                //    {
+                //        this.ProcessHotKey(e.Key.ToString());
+                //    }
+                //}
+            }
+
+            e.Handled = true;
+        }
+
+        private char GetChar(string value)
+        {
+            return value[0];
+        }
+
+        private void ProcessHotKey(string value)
+        {
+            if (value.Length == 1)
+            {
+                char hotkey = value[0];
+                if (this._HotKeyMapping.Any(v => v.Value == hotkey))
+                {
+                    KeyValuePair<string, char> mapping = this._HotKeyMapping.FirstOrDefault(v => v.Value == hotkey);
+                    
+                    if (mapping.Key == nameof(OkButton))
+                    {
+                        this._DialogResult = MessageBoxResultEx.OK;
+                        this.Deactivate();
+                    }
+                    if (mapping.Key == nameof(CancelButton))
+                    {
+                        this._DialogResult = MessageBoxResultEx.Cancel;
+                        this.Deactivate();
+                    }
+                    if (mapping.Key == nameof(YesButton))
+                    {
+                        this._DialogResult = MessageBoxResultEx.Yes;
+                        this.Deactivate();
+                    }
+                    if (mapping.Key == nameof(NoButton))
+                    {
+                        this._DialogResult = MessageBoxResultEx.No;
+                        this.Deactivate();
+                    }
+
+                    if (mapping.Key == nameof(AbortButton))
+                    {
+                        this._DialogResult = MessageBoxResultEx.Abort;
+                        this.Deactivate();
+                    }
+
+                    if (mapping.Key == nameof(RetryButton))
+                    {
+                        this._DialogResult = MessageBoxResultEx.Retry;
+                        this.Deactivate();
+                    }
+
+                    if (mapping.Key == nameof(IgnoreButton))
+                    {
+                        this._DialogResult = MessageBoxResultEx.Ignore;
+                        this.Deactivate();
+                    }
+                }
+            }
+        }
+
+        private void Deactivate()
+        {
+            this.Focusable = false;
+            this.Close();
+        }
+
+        public void ShowDialog()
+        {
+            this.EventHandlers(true);
+            base.ShowDialog();
         }
 
         private void ScrollableMessageBoxView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -273,8 +379,9 @@ namespace ScrollableMessageBoxLib.Views
                             break;
                     }
                 }
-                this.Hide();
+                this.Deactivate();
             }
+            e.Handled = true;
         }
     }
 }
