@@ -1,4 +1,5 @@
-﻿using ScrollableMessageBoxLib.Enums;
+﻿using ScrollableMessageBoxLib.Core;
+using ScrollableMessageBoxLib.Enums;
 using ScrollableMessageBoxLib.Utils;
 using System;
 using System.Collections.Generic;
@@ -31,6 +32,7 @@ namespace ScrollableMessageBoxLib.Views
         {
             get => this._DialogResult;
         }
+        public bool CanButtonCommandHandlerExecute { get => true; }
 
         public void Dispose()
         {
@@ -103,7 +105,6 @@ namespace ScrollableMessageBoxLib.Views
                 this.ButtonEvents(this.IgnoreButton, true);
 
                 this.Closing += ScrollableMessageBoxView_Closing;
-                //this.KeyUp += ScrollableMessageBoxView_KeyUp;
                 this.KeyDown += ScrollableMessageBoxView_KeyDown;
             }
             else
@@ -117,8 +118,7 @@ namespace ScrollableMessageBoxLib.Views
                 this.ButtonEvents(this.IgnoreButton, false);
 
                 this.Closing -= ScrollableMessageBoxView_Closing;
-                //this.KeyUp -= ScrollableMessageBoxView_KeyUp;
-                this.KeyDown += ScrollableMessageBoxView_KeyDown;
+                this.KeyDown -= ScrollableMessageBoxView_KeyDown;
             }
         }
 
@@ -220,18 +220,6 @@ namespace ScrollableMessageBoxLib.Views
             {
 
                 this.ProcessHotKey(e.Key.ToString());
-
-                //if (Keyboard.Modifiers == ModifierKeys.Alt && e.Key == Key.O)
-                //{
-                //    this.ProcessHotKey(e.Key.ToString());
-                //}
-                //else
-                //{
-                //    if (((Keyboard.Modifiers & ModifierKeys.Alt) == ModifierKeys.Alt) && this._HotKeyMapping.Any(v => v.Value == this.GetChar(e.Key.ToString())))
-                //    {
-                //        this.ProcessHotKey(e.Key.ToString());
-                //    }
-                //}
             }
 
             e.Handled = true;
@@ -246,45 +234,42 @@ namespace ScrollableMessageBoxLib.Views
         {
             if (value.Length == 1)
             {
-                char hotkey = value[0];
+                char hotkey = this.GetChar(value);
                 if (this._HotKeyMapping.Any(v => v.Value == hotkey))
                 {
                     KeyValuePair<string, char> mapping = this._HotKeyMapping.FirstOrDefault(v => v.Value == hotkey);
                     
-                    if (mapping.Key == nameof(OkButton))
+                    if (mapping.Key == nameof(OkButton) && OkButton.Visibility == Visibility.Visible)
                     {
                         this._DialogResult = MessageBoxResultEx.OK;
                         this.Deactivate();
                     }
-                    if (mapping.Key == nameof(CancelButton))
+                    else if (mapping.Key == nameof(CancelButton) && CancelButton.Visibility == Visibility.Visible)
                     {
                         this._DialogResult = MessageBoxResultEx.Cancel;
                         this.Deactivate();
                     }
-                    if (mapping.Key == nameof(YesButton))
+                    else if (mapping.Key == nameof(YesButton) && YesButton.Visibility == Visibility.Visible)
                     {
                         this._DialogResult = MessageBoxResultEx.Yes;
                         this.Deactivate();
                     }
-                    if (mapping.Key == nameof(NoButton))
+                    else if (mapping.Key == nameof(NoButton) && NoButton.Visibility == Visibility.Visible)
                     {
                         this._DialogResult = MessageBoxResultEx.No;
                         this.Deactivate();
                     }
-
-                    if (mapping.Key == nameof(AbortButton))
+                    else if (mapping.Key == nameof(AbortButton) && AbortButton.Visibility == Visibility.Visible)
                     {
                         this._DialogResult = MessageBoxResultEx.Abort;
                         this.Deactivate();
                     }
-
-                    if (mapping.Key == nameof(RetryButton))
+                    else if (mapping.Key == nameof(RetryButton) && RetryButton.Visibility == Visibility.Visible)
                     {
                         this._DialogResult = MessageBoxResultEx.Retry;
                         this.Deactivate();
                     }
-
-                    if (mapping.Key == nameof(IgnoreButton))
+                    else if (mapping.Key == nameof(IgnoreButton) && IgnoreButton.Visibility == Visibility.Visible)
                     {
                         this._DialogResult = MessageBoxResultEx.Ignore;
                         this.Deactivate();
