@@ -26,6 +26,7 @@ namespace ScrollableMessageBoxLib.Utils
                             if (detectedHotKeyPrefix < value.Length - 1)
                             {
                                 return value[detectedHotKeyPrefix + 1];
+                                // return (Key)char.ToUpper(hotkey);
                             }
                         }
                     }

@@ -1,13 +1,12 @@
-﻿using ScrollableMessageBoxLib.Core;
-using ScrollableMessageBoxLib.Enums;
-using ScrollableMessageBoxLib.Utils;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using ScrollableMessageBoxLib.Enums;
+using ScrollableMessageBoxLib.Utils;
 
 namespace ScrollableMessageBoxLib.Views
 {
@@ -17,6 +16,8 @@ namespace ScrollableMessageBoxLib.Views
     public partial class ScrollableMessageBoxView : Window, IDisposable
     {
         private MessageBoxResultEx _DialogResult = MessageBoxResultEx.None;
+
+        private MessageBoxResultEx _DefaultDialogResult = MessageBoxResultEx.None;
 
         private MessageBoxButtonEx _Buttons = MessageBoxButtonEx.OK;
 
@@ -32,6 +33,7 @@ namespace ScrollableMessageBoxLib.Views
         {
             get => this._DialogResult;
         }
+
         public bool CanButtonCommandHandlerExecute { get => true; }
 
         public void Dispose()
@@ -43,6 +45,7 @@ namespace ScrollableMessageBoxLib.Views
         {
             this.SetWindow();
             this.TextBoxMessageText.IsReadOnly = true;
+            this.TextBoxMessageText.Background = Brushes.Transparent;
         }
 
         private void SetWindow()
@@ -53,11 +56,6 @@ namespace ScrollableMessageBoxLib.Views
             this.MaxWidth = 600;
             this.ResizeMode = ResizeMode.NoResize;
             this.SizeToContent = SizeToContent.WidthAndHeight;
-
-            this.ShowInTaskbar = false;
-            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            this.WindowStyle = WindowStyle.ToolWindow;
-            
         }
 
         public void SetButtonVisibility(MessageBoxButtonEx buttons)
@@ -127,6 +125,11 @@ namespace ScrollableMessageBoxLib.Views
             }
         }
 
+        public void SetDefaultDialogResult(MessageBoxResultEx dialogDefaultResult)
+        {
+            this._DefaultDialogResult = dialogDefaultResult;
+        }
+
         private void ButtonEvents(Button button, bool attach)
         {
             if (attach)
@@ -146,7 +149,6 @@ namespace ScrollableMessageBoxLib.Views
                 button.MouseEnter -= Button_MouseEnter;
                 button.MouseLeave -= Button_MouseLeave;
             }
-            
         }
 
         private void SetButtonHotKyes(Button button)
@@ -198,28 +200,33 @@ namespace ScrollableMessageBoxLib.Views
             {
                 if (this.OkButton.Visibility == Visibility.Visible)
                 {
-                    this._DialogResult = MessageBoxResultEx.OK;
+                    this._DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.OK;
+                    this.Deactivate();
                 }
 
-                if (this.YesButton.Visibility == Visibility.Visible)
-                {
-                    this._DialogResult = MessageBoxResultEx.Yes;
-                }
+                //if (this.YesButton.Visibility == Visibility.Visible)
+                //{
+                //    this._DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Yes;
+                //}
 
                 if (this.RetryButton.Visibility == Visibility.Visible)
                 {
-                    this._DialogResult = MessageBoxResultEx.Retry;
+                    this._DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Retry;
+                    this.Deactivate();
                 }
-                this.Deactivate();
+                
             }
             else if (e.Key == Key.Escape)
             {
                 this.CancelEvent();
-                this.Deactivate();
+                if (this._Buttons != MessageBoxButtonEx.YesNo)
+                {
+                    this.Deactivate();
+                    e.Handled = true; // IMPORTANT: sign event as handled, do not pass to calling window
+                }
             }
             else
             {
-
                 this.ProcessHotKey(e.Key.ToString());
             }
         }
@@ -237,7 +244,7 @@ namespace ScrollableMessageBoxLib.Views
                 if (this._HotKeyMapping.Any(v => v.Value == hotkey))
                 {
                     KeyValuePair<string, char> mapping = this._HotKeyMapping.FirstOrDefault(v => v.Value == hotkey);
-                    
+
                     if (mapping.Key == nameof(OkButton) && OkButton.Visibility == Visibility.Visible)
                     {
                         this._DialogResult = MessageBoxResultEx.OK;
@@ -293,7 +300,14 @@ namespace ScrollableMessageBoxLib.Views
         {
             if (this._DialogResult == MessageBoxResultEx.None)
             {
-                this.CancelEvent();
+                if (this._Buttons != MessageBoxButtonEx.YesNo)
+                {
+                    this.CancelEvent();
+                }
+                else
+                {
+                    e.Cancel = true;
+                }
             }
         }
 
@@ -305,19 +319,19 @@ namespace ScrollableMessageBoxLib.Views
             }
             else if (this.CancelButton.Visibility == Visibility.Visible)
             {
-                this._DialogResult = MessageBoxResultEx.Cancel;
+                this._DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Cancel;
             }
             else if (this.AbortButton.Visibility == Visibility.Visible)
             {
-                this._DialogResult = MessageBoxResultEx.Abort;
+                this._DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Abort;
             }
-            else if (NoButton.Visibility == Visibility.Visible)
-            {
-                this._DialogResult = MessageBoxResultEx.No;
-            }
+            //else if (NoButton.Visibility == Visibility.Visible)
+            //{
+            //    this._DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.No;
+            //}
             else
             {
-                this._DialogResult = MessageBoxResultEx.Cancel;
+                    this._DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Cancel;
             }
         }
 

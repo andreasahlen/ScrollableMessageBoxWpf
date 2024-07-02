@@ -28,6 +28,8 @@ namespace ScrollableMessageBoxLib.Viewmodels
 
         private MessageBoxImageEx _Icon = MessageBoxImageEx.Information;
 
+        private MessageBoxResultEx _DialogDefaultResult = MessageBoxResultEx.None;
+
         private CultureInfo _Locales = CultureInfo.CurrentUICulture;
 
         public string Title { get; }
@@ -71,6 +73,17 @@ namespace ScrollableMessageBoxLib.Viewmodels
             this.SetCulture(culture);
         }
 
+        public ScrollableMessageBoxViewModel(Window owner, string content, string title, MessageBoxButtonEx button, MessageBoxImageEx icon, MessageBoxResultEx defaultResult, CultureInfo culture = null)
+        {
+            this.Title = title;
+            this.MessageText = content;
+            this._Owner = Application.Current.MainWindow;
+            this._Button = button;
+            this._Icon = icon;
+            this._DialogDefaultResult = defaultResult;
+            this.SetCulture(culture);
+        }
+
         private void SetCulture(CultureInfo culture)
         {
             if (culture != null)
@@ -92,22 +105,25 @@ namespace ScrollableMessageBoxLib.Viewmodels
             this._View = new ScrollableMessageBoxView();
             this._View.Owner = this._Owner;
             this._View.DataContext = this;
+            this._View.ShowInTaskbar = false;
+            this._View.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            this._View.WindowStyle = WindowStyle.ToolWindow;
+            this._View.SetDefaultDialogResult(this._DialogDefaultResult);
+            this.MessageIcon = this.ToImageSource(IconFromSystemIcons());
             this._View.SetButtonVisibility(this._Button);
-            this.MessageIcon = this.ToImageSource(this.IconFromSystemIcons());
-            
         }
 
         private void SetButtonLocales()
         {
             this.OverrideCultureInfo();
 
-            this._View.OkButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonOKText;
-            this._View.CancelButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonCancelText;
-            this._View.YesButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonYesText;
-            this._View.NoButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonNoText;
-            this._View.RetryButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonRetryText;
-            this._View.AbortButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonAbortText;
-            this._View.IgnoreButton.Content = ScrollableMessageBoxLib.Properties.Resources.ButtonIgnoreText;
+            this._View.OkButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonOKText;
+            this._View.CancelButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonCancelText;
+            this._View.YesButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonYesText;
+            this._View.NoButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonNoText;
+            this._View.RetryButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonRetryText;
+            this._View.AbortButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonAbortText;
+            this._View.IgnoreButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonIgnoreText;
         }
 
         private void OverrideCultureInfo()
