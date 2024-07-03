@@ -303,20 +303,20 @@ Updated: $Date: 2023/11/30 09:46:01 $
         {
             this._View = view;
             this._View.DataContext = this;
-            
-            this._ClickMeCommand = new CommandHandler(() => ClickedEventHandler(), () => CanClick);
+
+            this._ClickMeCommand = new CommandHandler(this.ClickedEventHandler, this.CanClick);
 
             this._View.Show();
         }
 
-        private void ClickedEventHandler()
+        private void ClickedEventHandler(object obj)
         {
             this.RunDemo();
         }
 
-        public bool CanClick
+        public bool CanClick()
         {
-            get => true;
+            return true;
         }
 
         private void RunDemo()
@@ -335,7 +335,6 @@ Updated: $Date: 2023/11/30 09:46:01 $
                     using (ScrollableMessageBoxViewModel msgBoxDefault = new ScrollableMessageBoxViewModel(Application.Current.MainWindow, longtext ? this.LongText : this.Text2, "title", btn, (MessageBoxImageEx)images[idx]))
                     {
                         Console.WriteLine(msgBoxDefault.ShowDialog().ToString());
-                        Debug.WriteLine(msgBoxDefault.ShowDialog().ToString());
                         longtext = !longtext;
                     }
                 }
