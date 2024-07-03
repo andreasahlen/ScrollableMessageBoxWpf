@@ -158,7 +158,7 @@ namespace ScrollableMessageBoxLib.Views
         {
             if (attach)
             {
-                //button.Click += ButtonClickedHandler;
+                button.Click += ((ScrollableMessageBoxViewModel)DataContext).ButtonClickedHandler;
                 button.GotFocus += ((ScrollableMessageBoxViewModel)DataContext).OkButton_GotFocus;
                 button.LostFocus += ((ScrollableMessageBoxViewModel)DataContext).OkButton_LostFocus;
                 button.MouseEnter += ((ScrollableMessageBoxViewModel)DataContext).Button_MouseEnter;
@@ -166,7 +166,7 @@ namespace ScrollableMessageBoxLib.Views
             }
             else
             {
-                //button.Click -= ButtonClickedHandler;
+                button.Click -= ((ScrollableMessageBoxViewModel)DataContext).ButtonClickedHandler;
                 button.GotFocus -= ((ScrollableMessageBoxViewModel)DataContext).OkButton_GotFocus;
                 button.LostFocus -= ((ScrollableMessageBoxViewModel)DataContext).OkButton_LostFocus;
                 button.MouseEnter -= ((ScrollableMessageBoxViewModel)DataContext).Button_MouseEnter;
@@ -181,9 +181,6 @@ namespace ScrollableMessageBoxLib.Views
             return ((ScrollableMessageBoxViewModel)DataContext).DialogResult;
         }
 
-        private void ButtonClickedHandler(object sender, RoutedEventArgs e)
-        {
-            this.Close();
-        }
+        
     }
 }

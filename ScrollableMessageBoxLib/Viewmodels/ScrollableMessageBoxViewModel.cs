@@ -325,8 +325,11 @@ namespace ScrollableMessageBoxLib.Viewmodels
             }
             else
             {
-                this.ProcessHotKey(e.Key.ToString());
-                this.CloseDialog(sender);
+                if (this.ProcessHotKey(e.Key.ToString()))
+                {
+                    this.CloseDialog(sender);
+                }
+                
             }
         }
 
@@ -362,7 +365,7 @@ namespace ScrollableMessageBoxLib.Viewmodels
             return value[0];
         }
 
-        private void ProcessHotKey(string value)
+        private bool ProcessHotKey(string value)
         {
             if (value.Length == 1)
             {
@@ -374,40 +377,42 @@ namespace ScrollableMessageBoxLib.Viewmodels
                     if (mapping.Key == MessageBoxResultEx.OK && OkButtonVisibility == Visibility.Visible)
                     {
                         this.DialogResult = MessageBoxResultEx.OK;
-                        return;
+                        return true;
                     }
                     else if (mapping.Key == MessageBoxResultEx.Cancel && CancelButtonVisibility == Visibility.Visible)
                     {
                         this.DialogResult = MessageBoxResultEx.Cancel;
-                        return;
+                        return true;
                     }
                     else if (mapping.Key == MessageBoxResultEx.Yes && YesButtonVisibility == Visibility.Visible)
                     {
                         this.DialogResult = MessageBoxResultEx.Yes;
-                        return;
+                        return true;
                     }
                     else if (mapping.Key == MessageBoxResultEx.No && NoButtonVisibility == Visibility.Visible)
                     {
                         this.DialogResult = MessageBoxResultEx.No;
-                        return;
+                        return true;
                     }
                     else if (mapping.Key == MessageBoxResultEx.Abort && AbortButtonVisibility == Visibility.Visible)
                     {
                         this.DialogResult = MessageBoxResultEx.Abort;
-                        return;
+                        return true;
                     }
                     else if (mapping.Key == MessageBoxResultEx.Retry && RetryButtonVisibility == Visibility.Visible)
                     {
                         this.DialogResult = MessageBoxResultEx.Retry;
-                        return;
+                        return true;
                     }
                     else if (mapping.Key == MessageBoxResultEx.Ignore && IgnoreButtonVisibility == Visibility.Visible)
                     {
                         this.DialogResult = MessageBoxResultEx.Ignore;
-                        return;
+                        return true;
                     }
                 }
+                return false;
             }
+            return false;
         }
 
         public void SetButtons()
@@ -540,6 +545,15 @@ namespace ScrollableMessageBoxLib.Viewmodels
             {
                 this.SetBold(sender as Button, true);
             }
+        }
+
+        public void ButtonClickedHandler(object sender, RoutedEventArgs e)
+        {
+            if (this._DialogResult != MessageBoxResultEx.None)
+            {
+                this.CloseDialog(sender);
+            }
+           
         }
     }
 }
