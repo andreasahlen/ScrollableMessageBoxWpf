@@ -19,7 +19,7 @@ namespace ScrollableMessageBoxApp
 
         private System.Windows.Input.ICommand _ClickMeCommand = null;
 
-        private string Text2 = "The FSF's commitment is unwavering, but we urgently need your financial support. New and renewing associate members will help us bring free software to every facet of people's lives. Help us reach our goal";
+        private string Text2 = "The FSF's commitment is unwavering, but we urgently need your financial support.\nNew and renewing associate members will help us\nbring free software to every facet of people's lives. Help us reach our goal";
 
         private string LongText = @"Skip to main text
 
@@ -331,15 +331,15 @@ Updated: $Date: 2023/11/30 09:46:01 $
                 int idx = r.Next(0, images.Count - 1);
                 if (idx < images.Count - 1)
                 {
-                    
+
                     using (ScrollableMessageBoxViewModel msgBoxDefault = new ScrollableMessageBoxViewModel(Application.Current.MainWindow, longtext ? this.LongText : this.Text2, "title", btn, (MessageBoxImageEx)images[idx]))
                     {
-                        MessageBoxResultEx res = msgBoxDefault.ShowDialog();
-                        Debug.WriteLine(res.ToString());
+                        Console.WriteLine(msgBoxDefault.ShowDialog().ToString());
+                        Debug.WriteLine(msgBoxDefault.ShowDialog().ToString());
                         longtext = !longtext;
                     }
                 }
-                
+
             }
         }
 

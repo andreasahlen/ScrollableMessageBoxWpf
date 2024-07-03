@@ -1,12 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using ScrollableMessageBoxLib.Core;
 using ScrollableMessageBoxLib.Enums;
+using ScrollableMessageBoxLib.I18N;
+using ScrollableMessageBoxLib.Properties;
 using ScrollableMessageBoxLib.Utils;
+using ScrollableMessageBoxLib.Viewmodels;
 
 namespace ScrollableMessageBoxLib.Views
 {
@@ -15,23 +20,20 @@ namespace ScrollableMessageBoxLib.Views
     /// </summary>
     public partial class ScrollableMessageBoxView : Window, IDisposable
     {
-        private MessageBoxResultEx _DialogResult = MessageBoxResultEx.None;
-
         private MessageBoxResultEx _DefaultDialogResult = MessageBoxResultEx.None;
 
         private MessageBoxButtonEx _Buttons = MessageBoxButtonEx.OK;
 
         private Dictionary<string, char> _HotKeyMapping = new Dictionary<string, char>();
 
-        public ScrollableMessageBoxView()
+        private CultureInfo _Locales;
+
+        public ScrollableMessageBoxView(ScrollableMessageBoxViewModel vm)
         {
             InitializeComponent();
+            this.DataContext = vm;
             InitializeDialog();
-        }
-
-        public MessageBoxResultEx DialogResult
-        {
-            get => this._DialogResult;
+            
         }
 
         public bool CanButtonCommandHandlerExecute { get => true; }
@@ -43,19 +45,79 @@ namespace ScrollableMessageBoxLib.Views
 
         private void InitializeDialog()
         {
-            this.SetWindow();
+            this.SetWindowProperties();
+            this.SetTextBoxProperties();
+            this.SetButtonLocales();
+            
+        }
+
+        private void SetTextBoxProperties()
+        {
             this.TextBoxMessageText.IsReadOnly = true;
+            this.TextBoxMessageText.TextWrapping = TextWrapping.Wrap;
             this.TextBoxMessageText.Background = Brushes.Transparent;
         }
 
-        private void SetWindow()
+        private void SetWindowProperties()
         {
-            this.MinWidth = 400;
-            this.MinHeight = 100;
-            this.MaxHeight = 600;
-            this.MaxWidth = 600;
-            this.ResizeMode = ResizeMode.NoResize;
+            ScreenResolution res = new ScreenResolution();
+
+            this.Owner = ((ScrollableMessageBoxViewModel)this.DataContext).Owner;
+            this.Title = ((ScrollableMessageBoxViewModel)this.DataContext).Title;
+
+            this.ShowInTaskbar = false;
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            this.WindowStyle = WindowStyle.ToolWindow;
+            this.SetDefaultDialogResult(((ScrollableMessageBoxViewModel)this.DataContext).DialogDefaultResult);
+
+            this.SetButtonVisibility(((ScrollableMessageBoxViewModel)this.DataContext).Buttons);
+
+            this.MinWidth = 300;
+            this.MinHeight = 200;
+            this.Top = res.BorderSize;
+            this.Left = res.BorderSize;
+            this.MaxHeight = res.Height;
+            this.MaxWidth = res.Width;
+            this.ResizeMode = ResizeMode.CanResize;
             this.SizeToContent = SizeToContent.WidthAndHeight;
+        }
+
+        private void SetButtonLocales()
+        {
+            this.OverrideCultureInfo();
+
+            this.OkButton.Content = Properties.Resources.ButtonOKText;
+            this.CancelButton.Content = Properties.Resources.ButtonCancelText;
+            this.YesButton.Content = Properties.Resources.ButtonYesText;
+            this.NoButton.Content = Properties.Resources.ButtonNoText;
+            this.RetryButton.Content = Properties.Resources.ButtonRetryText;
+            this.AbortButton.Content = Properties.Resources.ButtonAbortText;
+            this.IgnoreButton.Content = Properties.Resources.ButtonIgnoreText;
+        }
+
+        private void OverrideCultureInfo()
+        {
+            this._Locales = ((ScrollableMessageBoxViewModel)this.DataContext).Locales;
+            List<string> avail = new CultureInfoEnumerator()?.GetAvailableLanguages();
+            if (avail.Any(v => v == this._Locales.IetfLanguageTag))
+            {
+                this._Locales = new CultureInfo(avail.FirstOrDefault(v => v == this._Locales.IetfLanguageTag));
+            }
+            else
+            {
+                // except "en-US" (default resources.resx culture)
+                if (this._Locales.IetfLanguageTag == "en-US")
+                {
+                    this._Locales = new CultureInfo("en-US"); // pass this
+                }
+                else
+                {
+                    this._Locales = new CultureInfo(Settings.Default.FallbackIetfLanguageTag);
+                }
+
+            }
+
+            CultureInfo.CurrentUICulture = this._Locales;
         }
 
         public void SetButtonVisibility(MessageBoxButtonEx buttons)
@@ -125,7 +187,7 @@ namespace ScrollableMessageBoxLib.Views
             }
         }
 
-        public void SetDefaultDialogResult(MessageBoxResultEx dialogDefaultResult)
+        private void SetDefaultDialogResult(MessageBoxResultEx dialogDefaultResult)
         {
             this._DefaultDialogResult = dialogDefaultResult;
         }
@@ -200,7 +262,7 @@ namespace ScrollableMessageBoxLib.Views
             {
                 if (this.OkButton.Visibility == Visibility.Visible)
                 {
-                    this._DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.OK;
+                    ((ScrollableMessageBoxViewModel)DataContext).DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.OK;
                     this.Deactivate();
                 }
 
@@ -211,7 +273,13 @@ namespace ScrollableMessageBoxLib.Views
 
                 if (this.RetryButton.Visibility == Visibility.Visible)
                 {
-                    this._DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Retry;
+                    ((ScrollableMessageBoxViewModel)DataContext).DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Retry;
+                    this.Deactivate();
+                }
+
+                if (this._Buttons == MessageBoxButtonEx.YesNoCancel)
+                {
+                    ((ScrollableMessageBoxViewModel)DataContext).DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Yes;
                     this.Deactivate();
                 }
                 
@@ -247,37 +315,37 @@ namespace ScrollableMessageBoxLib.Views
 
                     if (mapping.Key == nameof(OkButton) && OkButton.Visibility == Visibility.Visible)
                     {
-                        this._DialogResult = MessageBoxResultEx.OK;
+                        ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.OK;
                         this.Deactivate();
                     }
                     else if (mapping.Key == nameof(CancelButton) && CancelButton.Visibility == Visibility.Visible)
                     {
-                        this._DialogResult = MessageBoxResultEx.Cancel;
+                        ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.Cancel;
                         this.Deactivate();
                     }
                     else if (mapping.Key == nameof(YesButton) && YesButton.Visibility == Visibility.Visible)
                     {
-                        this._DialogResult = MessageBoxResultEx.Yes;
+                        ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.Yes;
                         this.Deactivate();
                     }
                     else if (mapping.Key == nameof(NoButton) && NoButton.Visibility == Visibility.Visible)
                     {
-                        this._DialogResult = MessageBoxResultEx.No;
+                        ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.No;
                         this.Deactivate();
                     }
                     else if (mapping.Key == nameof(AbortButton) && AbortButton.Visibility == Visibility.Visible)
                     {
-                        this._DialogResult = MessageBoxResultEx.Abort;
+                        ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.Abort;
                         this.Deactivate();
                     }
                     else if (mapping.Key == nameof(RetryButton) && RetryButton.Visibility == Visibility.Visible)
                     {
-                        this._DialogResult = MessageBoxResultEx.Retry;
+                        ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.Retry;
                         this.Deactivate();
                     }
                     else if (mapping.Key == nameof(IgnoreButton) && IgnoreButton.Visibility == Visibility.Visible)
                     {
-                        this._DialogResult = MessageBoxResultEx.Ignore;
+                        ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.Ignore;
                         this.Deactivate();
                     }
                 }
@@ -290,23 +358,34 @@ namespace ScrollableMessageBoxLib.Views
             this.Close();
         }
 
-        public void ShowDialog()
+        public MessageBoxResultEx ShowDialog()
         {
             this.EventHandlers(true);
             base.ShowDialog();
+            return ((ScrollableMessageBoxViewModel)DataContext).DialogResult;
         }
 
         private void ScrollableMessageBoxView_Closing(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            if (this._DialogResult == MessageBoxResultEx.None)
+            if (this._Buttons == MessageBoxButtonEx.YesNo)
             {
-                if (this._Buttons != MessageBoxButtonEx.YesNo)
-                {
-                    this.CancelEvent();
-                }
-                else
+                if (((ScrollableMessageBoxViewModel)DataContext).DialogResult != MessageBoxResultEx.No)
                 {
                     e.Cancel = true;
+                }
+            }
+            else
+            {
+                if (((ScrollableMessageBoxViewModel)DataContext).DialogResult == MessageBoxResultEx.None)
+                {
+                    if (this._Buttons != MessageBoxButtonEx.YesNo)
+                    {
+                        this.CancelEvent();
+                    }
+                    else
+                    {
+                        e.Cancel = true;
+                    }
                 }
             }
         }
@@ -315,15 +394,15 @@ namespace ScrollableMessageBoxLib.Views
         {
             if (this._Buttons == MessageBoxButtonEx.OK && this.OkButton.Visibility == Visibility.Visible)
             {
-                this._DialogResult = MessageBoxResultEx.OK;
+                ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.OK;
             }
             else if (this.CancelButton.Visibility == Visibility.Visible)
             {
-                this._DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Cancel;
+                ((ScrollableMessageBoxViewModel)DataContext).DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Cancel;
             }
             else if (this.AbortButton.Visibility == Visibility.Visible)
             {
-                this._DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Abort;
+                ((ScrollableMessageBoxViewModel)DataContext).DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Abort;
             }
             //else if (NoButton.Visibility == Visibility.Visible)
             //{
@@ -331,7 +410,11 @@ namespace ScrollableMessageBoxLib.Views
             //}
             else
             {
-                    this._DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Cancel;
+                if (this._Buttons != MessageBoxButtonEx.YesNo)
+                {
+                    ((ScrollableMessageBoxViewModel)DataContext).DialogResult = this._DefaultDialogResult != MessageBoxResultEx.None ? this._DefaultDialogResult : MessageBoxResultEx.Cancel;
+                }
+                
             }
         }
 
@@ -345,35 +428,35 @@ namespace ScrollableMessageBoxLib.Views
                     switch (btn.Name)
                     {
                         case nameof(OkButton):
-                            this._DialogResult = MessageBoxResultEx.OK;
+                            ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.OK;
                             break;
 
                         case nameof(CancelButton):
-                            this._DialogResult = MessageBoxResultEx.Cancel;
+                            ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.Cancel;
                             break;
 
                         case nameof(YesButton):
-                            this._DialogResult = MessageBoxResultEx.Yes;
+                            ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.Yes;
                             break;
 
                         case nameof(NoButton):
-                            this._DialogResult = MessageBoxResultEx.No;
+                            ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.No;
                             break;
 
                         case nameof(RetryButton):
-                            this._DialogResult = MessageBoxResultEx.Retry;
+                            ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.Retry;
                             break;
 
                         case nameof(AbortButton):
-                            this._DialogResult = MessageBoxResultEx.Abort;
+                            ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.Abort;
                             break;
 
                         case nameof(IgnoreButton):
-                            this._DialogResult = MessageBoxResultEx.Ignore;
+                            ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.Ignore;
                             break;
 
                         default:
-                            this._DialogResult = MessageBoxResultEx.None;
+                            ((ScrollableMessageBoxViewModel)DataContext).DialogResult = MessageBoxResultEx.None;
                             break;
                     }
                 }

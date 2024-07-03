@@ -20,17 +20,38 @@ namespace ScrollableMessageBoxLib.Viewmodels
 {
     public sealed class ScrollableMessageBoxViewModel : ViewModelBase, INotifyPropertyChanged, IDisposable
     {
-        private ScrollableMessageBoxView _View = null;
-
         private Window _Owner = null;
 
-        private MessageBoxButtonEx _Button = MessageBoxButtonEx.OK;
+        private MessageBoxButtonEx _Buttons = MessageBoxButtonEx.OK;
+
+        public MessageBoxButtonEx Buttons => this._Buttons;
 
         private MessageBoxImageEx _Icon = MessageBoxImageEx.Information;
 
         private MessageBoxResultEx _DialogDefaultResult = MessageBoxResultEx.None;
 
+        public MessageBoxResultEx DialogDefaultResult => this._DialogDefaultResult;
+
+        private MessageBoxResultEx _DialogResult = MessageBoxResultEx.None;
+
+        public MessageBoxResultEx DialogResult
+        {
+            get => this._DialogResult;
+            set
+            {
+                if (this._DialogResult != value)
+                {
+                    this._DialogResult = value;
+                    this.RaisePropertyChanged(nameof(DialogResult));
+                }
+            }
+        }
+
         private CultureInfo _Locales = CultureInfo.CurrentUICulture;
+
+        public CultureInfo Locales => this._Locales;
+
+        public Window Owner => this._Owner;
 
         public string Title { get; }
 
@@ -58,9 +79,10 @@ namespace ScrollableMessageBoxLib.Viewmodels
             this.Title = title;
             this.MessageText = content;
             this._Owner = owner;
-            this._Button = button;
+            this._Buttons = button;
             this._Icon = icon;
             this.SetCulture(culture);
+            this.SetIcon();
         }
 
         public ScrollableMessageBoxViewModel(string content, string title, MessageBoxButtonEx button, MessageBoxImageEx icon, CultureInfo culture = null)
@@ -68,9 +90,10 @@ namespace ScrollableMessageBoxLib.Viewmodels
             this.Title = title;
             this.MessageText = content;
             this._Owner = null;
-            this._Button = button;
+            this._Buttons = button;
             this._Icon = icon;
             this.SetCulture(culture);
+            this.SetIcon();
         }
 
         public ScrollableMessageBoxViewModel(Window owner, string content, string title, MessageBoxButtonEx button, MessageBoxImageEx icon, MessageBoxResultEx defaultResult, CultureInfo culture = null)
@@ -78,10 +101,11 @@ namespace ScrollableMessageBoxLib.Viewmodels
             this.Title = title;
             this.MessageText = content;
             this._Owner = Application.Current.MainWindow;
-            this._Button = button;
+            this._Buttons = button;
             this._Icon = icon;
             this._DialogDefaultResult = defaultResult;
             this.SetCulture(culture);
+            this.SetIcon();
         }
 
         private void SetCulture(CultureInfo culture)
@@ -94,60 +118,16 @@ namespace ScrollableMessageBoxLib.Viewmodels
 
         public MessageBoxResultEx ShowDialog()
         {
-            this.InitDialog();
-            this.SetButtonLocales();
-            this._View.ShowDialog();
-            return this._View.DialogResult;
+            this._DialogDefaultResult = MessageBoxResultEx.None;
+            using (ScrollableMessageBoxView msgBox = new ScrollableMessageBoxView(this))
+            {
+                return new ScrollableMessageBoxView(this).ShowDialog();
+            }
         }
 
-        private void InitDialog()
+        private void SetIcon()
         {
-            this._View = new ScrollableMessageBoxView();
-            this._View.Owner = this._Owner;
-            this._View.DataContext = this;
-            this._View.ShowInTaskbar = false;
-            this._View.WindowStartupLocation = WindowStartupLocation.CenterScreen;
-            this._View.WindowStyle = WindowStyle.ToolWindow;
-            this._View.SetDefaultDialogResult(this._DialogDefaultResult);
             this.MessageIcon = this.ToImageSource(IconFromSystemIcons());
-            this._View.SetButtonVisibility(this._Button);
-        }
-
-        private void SetButtonLocales()
-        {
-            this.OverrideCultureInfo();
-
-            this._View.OkButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonOKText;
-            this._View.CancelButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonCancelText;
-            this._View.YesButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonYesText;
-            this._View.NoButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonNoText;
-            this._View.RetryButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonRetryText;
-            this._View.AbortButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonAbortText;
-            this._View.IgnoreButton.Content = global::ScrollableMessageBoxLib.Properties.Resources.ButtonIgnoreText;
-        }
-
-        private void OverrideCultureInfo()
-        {
-            List<string> avail = new CultureInfoEnumerator()?.GetAvailableLanguages();
-            if (avail.Any(v => v == this._Locales.IetfLanguageTag))
-            {
-                this._Locales = new CultureInfo(avail.FirstOrDefault(v => v == this._Locales.IetfLanguageTag));
-            }
-            else
-            {
-                // except "en-US" (default resources.resx culture)
-                if (this._Locales.IetfLanguageTag == "en-US")
-                {
-                    this._Locales = new CultureInfo("en-US"); // pass this
-                }
-                else
-                {
-                    this._Locales = new CultureInfo(Settings.Default.FallbackIetfLanguageTag);
-                }
-                
-            }
-
-            CultureInfo.CurrentUICulture = this._Locales;
         }
 
         private Icon IconFromSystemIcons()
@@ -190,7 +170,7 @@ namespace ScrollableMessageBoxLib.Viewmodels
 
         public void Dispose()
         {
-            this?._View?.Dispose();
+            // TODO
         }
     }
 }

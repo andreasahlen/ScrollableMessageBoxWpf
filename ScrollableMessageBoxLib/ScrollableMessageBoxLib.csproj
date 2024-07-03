@@ -35,6 +35,7 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -51,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Converter\IconToImageSourceConverter .cs" />
     <Compile Include="Core\CommandHandler.cs" />
+    <Compile Include="Core\ScreenResolution.cs" />
     <Compile Include="Enums\MessageBoxButtonEx.cs" />
     <Compile Include="Enums\MessageBoxButtonTypeEx.cs" />
     <Compile Include="Enums\MessageBoxImageEx.cs" />
