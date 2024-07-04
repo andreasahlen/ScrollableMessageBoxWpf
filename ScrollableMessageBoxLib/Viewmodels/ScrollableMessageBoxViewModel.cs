@@ -45,11 +45,8 @@ namespace ScrollableMessageBoxLib.Viewmodels
             get => this._DialogResult;
             set
             {
-                if (this._DialogResult != value)
-                {
-                    this._DialogResult = value;
-                    this.RaisePropertyChanged(nameof(DialogResult));
-                }
+                this._DialogResult = value;
+                this.RaisePropertyChanged(nameof(DialogResult));
             }
         }
 
@@ -184,6 +181,11 @@ namespace ScrollableMessageBoxLib.Viewmodels
             {
                 this._OnClickCommand = new CommandHandler(ClickedEventHandler, CanClick);
             }
+            else
+            {
+                this._OnClickCommand = null;
+                this.RaisePropertyChanged(nameof(OnClickCommand));
+            }
         }
 
         private bool CanClick()
@@ -218,10 +220,11 @@ namespace ScrollableMessageBoxLib.Viewmodels
         public MessageBoxResultEx ShowDialog()
         {
             this._DialogDefaultResult = MessageBoxResultEx.None;
-            using (ScrollableMessageBoxView msgBox = new ScrollableMessageBoxView(this))
+            using (ScrollableMessageBoxView msgBox = new ScrollableMessageBoxView(this, false))
             {
-                return new ScrollableMessageBoxView(this).ShowDialog();
+                this._DialogDefaultResult = msgBox.ShowDialog();
             }
+            return this._DialogDefaultResult;
         }
 
         private void SetIcon()
@@ -238,20 +241,28 @@ namespace ScrollableMessageBoxLib.Viewmodels
                     
                 case MessageBoxImageEx.Hand:
                     return SystemIcons.Hand;
+
                 case MessageBoxImageEx.Question:
                     return SystemIcons.Question;
+                
                 case MessageBoxImageEx.Exclamation:
                     return SystemIcons.Exclamation;
+                
                 case MessageBoxImageEx.Asterisk:
                     return SystemIcons.Asterisk;
+                
                 case MessageBoxImageEx.Stop:
                     return SystemIcons.Hand;
+                
                 case MessageBoxImageEx.Error:
                     return SystemIcons.Error;
+                
                 case MessageBoxImageEx.Warning:
                     return SystemIcons.Warning;
+                
                 case MessageBoxImageEx.Information:
                     return SystemIcons.Hand;
+                
                 default:
                     return SystemIcons.Information;
             }
@@ -293,7 +304,8 @@ namespace ScrollableMessageBoxLib.Viewmodels
             {
                 if (this.OkButtonVisibility == Visibility.Visible)
                 {
-                    this.DialogResult = this._DialogDefaultResult != MessageBoxResultEx.None ? this._DialogDefaultResult : MessageBoxResultEx.OK;
+                    //this.DialogResult = this._DialogDefaultResult != MessageBoxResultEx.None ? this._DialogDefaultResult : MessageBoxResultEx.OK;
+                    this.DialogResult = MessageBoxResultEx.OK;
                     this.CloseDialog(sender);
                 }
 
@@ -304,13 +316,15 @@ namespace ScrollableMessageBoxLib.Viewmodels
 
                 if (this.RetryButtonVisibility == Visibility.Visible)
                 {
-                    this.DialogResult = this._DialogDefaultResult != MessageBoxResultEx.None ? this._DialogDefaultResult : MessageBoxResultEx.Retry;
+                    //this.DialogResult = this._DialogDefaultResult != MessageBoxResultEx.None ? this._DialogDefaultResult : MessageBoxResultEx.Retry;
+                    this.DialogResult = MessageBoxResultEx.Retry;
                     this.CloseDialog(sender);
                 }
 
                 if (this._Buttons == MessageBoxButtonEx.YesNoCancel)
                 {
-                    this.DialogResult = this._DialogDefaultResult != MessageBoxResultEx.None ? this._DialogDefaultResult : MessageBoxResultEx.Yes;
+                    //this.DialogResult = this._DialogDefaultResult != MessageBoxResultEx.None ? this._DialogDefaultResult : MessageBoxResultEx.Yes;
+                    this.DialogResult = MessageBoxResultEx.Yes;
                     this.CloseDialog(sender);
                 }
             }
@@ -341,11 +355,13 @@ namespace ScrollableMessageBoxLib.Viewmodels
             }
             else if (this.CancelButtonVisibility == Visibility.Visible)
             {
-                this.DialogResult = this._DialogDefaultResult != MessageBoxResultEx.None ? this._DialogDefaultResult : MessageBoxResultEx.Cancel;
+                //this.DialogResult = this._DialogDefaultResult != MessageBoxResultEx.None ? this._DialogDefaultResult : MessageBoxResultEx.Cancel;
+                this.DialogResult = MessageBoxResultEx.Cancel;
             }
             else if (this.AbortButtonVisibility == Visibility.Visible)
             {
-                this.DialogResult = this._DialogDefaultResult != MessageBoxResultEx.None ? this._DialogDefaultResult : MessageBoxResultEx.Abort;
+                //this.DialogResult = this._DialogDefaultResult != MessageBoxResultEx.None ? this._DialogDefaultResult : MessageBoxResultEx.Abort;
+                this.DialogResult = MessageBoxResultEx.Abort;
             }
             //else if (NoButton.Visibility == Visibility.Visible)
             //{
@@ -355,7 +371,8 @@ namespace ScrollableMessageBoxLib.Viewmodels
             {
                 if (this._Buttons != MessageBoxButtonEx.YesNo)
                 {
-                    this.DialogResult = this._DialogDefaultResult != MessageBoxResultEx.None ? this._DialogDefaultResult : MessageBoxResultEx.Cancel;
+                    //this.DialogResult = this._DialogDefaultResult != MessageBoxResultEx.None ? this._DialogDefaultResult : MessageBoxResultEx.Cancel;
+                    this.DialogResult = MessageBoxResultEx.Cancel;
                 }
             }
         }
@@ -471,7 +488,10 @@ namespace ScrollableMessageBoxLib.Viewmodels
 
         private void CloseDialog(object sender)
         {
-            ((Window)sender).Close();
+            if (sender is Window)
+            {
+                ((Window)sender).Close();
+            }
         }
 
         private void SetButtonLocales()
@@ -549,11 +569,11 @@ namespace ScrollableMessageBoxLib.Viewmodels
 
         public void ButtonClickedHandler(object sender, RoutedEventArgs e)
         {
-            if (this._DialogResult != MessageBoxResultEx.None)
-            {
-                this.CloseDialog(sender);
-            }
-           
+            //if (this._DialogResult != MessageBoxResultEx.None)
+            //{
+            //    this.CloseDialog(sender);
+            //}
+            this.CloseDialog(sender);
         }
     }
 }

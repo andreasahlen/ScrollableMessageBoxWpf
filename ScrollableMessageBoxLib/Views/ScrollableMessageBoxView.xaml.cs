@@ -24,14 +24,17 @@ namespace ScrollableMessageBoxLib.Views
 
         private MessageBoxButtonEx _Buttons = MessageBoxButtonEx.OK;
 
-        private Dictionary<string, char> _HotKeyMapping = new Dictionary<string, char>();
+        private bool _Resizable = true;
+
+        // private Dictionary<string, char> _HotKeyMapping = new Dictionary<string, char>();
 
         // private CultureInfo _Locales;
 
-        public ScrollableMessageBoxView(ScrollableMessageBoxViewModel vm)
+        public ScrollableMessageBoxView(ScrollableMessageBoxViewModel vm, bool resizable = true)
         {
             InitializeComponent();
             this.DataContext = vm;
+            this._Resizable = resizable;
             InitializeDialog();
         }
 
@@ -64,7 +67,7 @@ namespace ScrollableMessageBoxLib.Views
             this.Title = ((ScrollableMessageBoxViewModel)this.DataContext).Title;
 
             this.ShowInTaskbar = false;
-            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
+            
             this.WindowStyle = WindowStyle.ToolWindow;
             this.SetDefaultDialogResult(((ScrollableMessageBoxViewModel)this.DataContext).DialogDefaultResult);
 
@@ -74,10 +77,21 @@ namespace ScrollableMessageBoxLib.Views
             this.MinHeight = 200;
             this.Top = res.BorderSize;
             this.Left = res.BorderSize;
-            this.MaxHeight = res.Height;
-            this.MaxWidth = res.Width;
-            this.ResizeMode = ResizeMode.CanResize;
+            if (this._Resizable)
+            {
+                this.MaxHeight = res.Height;
+                this.MaxWidth = res.Width;
+                this.ResizeMode = ResizeMode.CanResize;
+            }
+            else
+            {
+                this.MaxHeight = 600;
+                this.MaxWidth = 800;
+                this.ResizeMode = ResizeMode.NoResize;
+            }
+
             this.SizeToContent = SizeToContent.WidthAndHeight;
+            this.WindowStartupLocation = WindowStartupLocation.CenterScreen;
         }
 
         
@@ -158,7 +172,7 @@ namespace ScrollableMessageBoxLib.Views
         {
             if (attach)
             {
-                button.Click += ((ScrollableMessageBoxViewModel)DataContext).ButtonClickedHandler;
+                button.Click += Button_Click;
                 button.GotFocus += ((ScrollableMessageBoxViewModel)DataContext).OkButton_GotFocus;
                 button.LostFocus += ((ScrollableMessageBoxViewModel)DataContext).OkButton_LostFocus;
                 button.MouseEnter += ((ScrollableMessageBoxViewModel)DataContext).Button_MouseEnter;
@@ -166,7 +180,6 @@ namespace ScrollableMessageBoxLib.Views
             }
             else
             {
-                button.Click -= ((ScrollableMessageBoxViewModel)DataContext).ButtonClickedHandler;
                 button.GotFocus -= ((ScrollableMessageBoxViewModel)DataContext).OkButton_GotFocus;
                 button.LostFocus -= ((ScrollableMessageBoxViewModel)DataContext).OkButton_LostFocus;
                 button.MouseEnter -= ((ScrollableMessageBoxViewModel)DataContext).Button_MouseEnter;
@@ -174,13 +187,17 @@ namespace ScrollableMessageBoxLib.Views
             }
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            this.Hide();
+        }
+
         public MessageBoxResultEx ShowDialog()
         {
             this.EventHandlers(true);
             base.ShowDialog();
+            //this.Close();
             return ((ScrollableMessageBoxViewModel)DataContext).DialogResult;
         }
-
-        
     }
 }
