@@ -44,6 +44,7 @@
                      Margin="12"    
                      BorderThickness="0"
                      ScrollViewer.CanContentScroll="True"
+                     VerticalAlignment="Top"
                      VerticalScrollBarVisibility="Auto"
                      Text="{Binding MessageText, Mode=OneTime, UpdateSourceTrigger=PropertyChanged}" />
         <Grid Grid.Column="0" Grid.Row="1" Grid.ColumnSpan="2" Background="LightGray">

@@ -261,7 +261,7 @@ namespace ScrollableMessageBoxLib.Viewmodels
                     return SystemIcons.Warning;
                 
                 case MessageBoxImageEx.Information:
-                    return SystemIcons.Hand;
+                    return SystemIcons.Information;
                 
                 default:
                     return SystemIcons.Information;
